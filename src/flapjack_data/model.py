@@ -87,6 +87,10 @@ class Signal:
     name: str
     description: str = ""
     color: str = ""
+    #: Optional role hint: ``"fluorescence"``, ``"biomass"``, ``"od"``, ``"other"`` (or ``None``).
+    #: A default that analyses fall back to; the biomass/reference role can still be chosen
+    #: per request via :class:`~flapjack_data.characterization.AnalysisSpec`.
+    kind: str | None = None
     owner: str | None = None
     id: int | None = None
 
@@ -114,6 +118,47 @@ class Measurement:
     id: int | None = None
 
 
+@dataclass
+class Characterization:
+    """A persisted characterization run: an analysis applied to a selection of measurements.
+
+    Flapjack itself recomputes every metric on the fly and stores nothing; here a run and its
+    results are first-class so a backend can cache and re-serve them. ``spec`` is the serialized
+    :class:`~flapjack_data.characterization.AnalysisSpec` and ``params_hash`` is its stable hash,
+    used to look up a previously computed run instead of recomputing it.
+    """
+
+    analysis_type: str
+    spec: dict[str, object] = field(default_factory=dict)
+    params_hash: str = ""
+    name: str = ""
+    owner: str | None = None
+    id: int | None = None
+
+
+@dataclass
+class CharacterizationDatum:
+    """One result row of a :class:`Characterization`.
+
+    Holds both shapes the analyses produce: time-series rows carry ``time`` (one row per
+    timepoint); aggregate rows leave ``time`` ``None`` (one row per sample/signal). ``metric``
+    names the produced quantity (e.g. ``"Rate"``, ``"Velocity"``, ``"Expression"``, ``"Alpha"``,
+    ``"Rho"``). ``concentration``/``concentration2`` carry the dose-response axes for
+    induction/heatmap results.
+    """
+
+    characterization_id: int
+    sample_id: int
+    signal_id: int
+    metric: str
+    value: float
+    time: float | None = None
+    concentration: float | None = None
+    concentration2: float | None = None
+    owner: str | None = None
+    id: int | None = None
+
+
 #: Every entity type the model defines, for generic storage handling.
 ENTITY_TYPES = (
     Study,
@@ -127,4 +172,6 @@ ENTITY_TYPES = (
     Signal,
     Sample,
     Measurement,
+    Characterization,
+    CharacterizationDatum,
 )

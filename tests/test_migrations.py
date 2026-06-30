@@ -11,13 +11,18 @@ def test_migrations_create_schema_and_version_table(tmp_path: Path) -> None:
 
     engine = create_engine(url)
     try:
-        tables = set(inspect(engine).get_table_names())
+        inspector = inspect(engine)
+        tables = set(inspector.get_table_names())
+        signal_columns = {c["name"] for c in inspector.get_columns("signal")}
     finally:
         engine.dispose()
 
     assert {"study", "assay", "sample", "signal", "measurement"} <= tables
+    # Characterization runs and their result rows.
+    assert {"characterization", "characterizationdatum"} <= tables
     # The dedicated version table keeps this chain independent of a host app's Alembic.
     assert "flapjack_data_version" in tables
+    assert "kind" in signal_columns
 
 
 def test_migrations_downgrade_to_base(tmp_path: Path) -> None:

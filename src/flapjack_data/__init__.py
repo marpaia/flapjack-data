@@ -7,8 +7,15 @@ model and live in their own packages or applications.
 """
 
 from flapjack_data.backends.memory import InMemoryStorage
+from flapjack_data.characterization import (
+    AnalysisSpec,
+    AnalysisType,
+    Selection,
+)
 from flapjack_data.model import (
     Assay,
+    Characterization,
+    CharacterizationDatum,
     Chemical,
     Dna,
     Measurement,
@@ -20,7 +27,7 @@ from flapjack_data.model import (
     Supplement,
     Vector,
 )
-from flapjack_data.storage import Storage
+from flapjack_data.storage import CharacterizationStorage, Storage
 
 __all__ = [
     "Study",
@@ -34,6 +41,12 @@ __all__ = [
     "Signal",
     "Sample",
     "Measurement",
+    "Characterization",
+    "CharacterizationDatum",
     "Storage",
+    "CharacterizationStorage",
     "InMemoryStorage",
+    "AnalysisType",
+    "AnalysisSpec",
+    "Selection",
 ]

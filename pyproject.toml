@@ -15,14 +15,23 @@ postgres = [
     "psycopg[binary]>=3.1",
     "alembic>=1.13",
 ]
+analysis = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pandas>=2.0",
+]
 dev = [
     "pytest>=8.0",
     "sqlalchemy>=2.0",
     "alembic>=1.13",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pandas>=2.0",
     "black>=24.0",
     "isort>=5.13",
     "flake8>=7.0",
     "mypy>=1.8",
+    "pre-commit>=3.5",
 ]
 
 [project.scripts]
@@ -56,3 +65,17 @@ module = [
     "flapjack_data.backends.postgres.migrations.versions.*",
 ]
 ignore_errors = true
+
+# The numerical engine works in numpy/scipy/pandas, whose array operations don't carry through
+# precise static types; strict annotation there fights the libraries rather than catching bugs.
+[[tool.mypy.overrides]]
+module = [
+    "flapjack_data.characterization.engine",
+    "flapjack_data.characterization.inverse",
+    "flapjack_data.characterization.wellfare",
+]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+disallow_any_generics = false
+warn_return_any = false
