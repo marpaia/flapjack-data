@@ -4,6 +4,10 @@ These are storage-agnostic dataclasses mirroring the Flapjack data model
 (study → assay → sample → measurement, with the surrounding registry entities).
 Relationships are expressed by id so any storage backend can persist them. Ids are
 assigned by the storage layer when an entity is added.
+
+Every entity carries an optional ``owner``: an opaque key (username, user id, organization
+id, ...) for multi-tenant deployments. Single-tenant users leave it ``None``; a storage
+backend can scope reads and writes to one owner.
 """
 
 from dataclasses import dataclass, field
@@ -14,6 +18,7 @@ class Study:
     name: str
     description: str = ""
     public: bool = False
+    owner: str | None = None
     id: int | None = None
 
 
@@ -24,6 +29,7 @@ class Assay:
     machine: str = ""
     description: str = ""
     temperature: float = 0.0
+    owner: str | None = None
     id: int | None = None
 
 
@@ -31,6 +37,7 @@ class Assay:
 class Media:
     name: str
     description: str = ""
+    owner: str | None = None
     id: int | None = None
 
 
@@ -38,6 +45,7 @@ class Media:
 class Strain:
     name: str
     description: str = ""
+    owner: str | None = None
     id: int | None = None
 
 
@@ -46,6 +54,7 @@ class Chemical:
     name: str
     description: str = ""
     pubchemid: int | None = None
+    owner: str | None = None
     id: int | None = None
 
 
@@ -54,12 +63,14 @@ class Supplement:
     name: str
     chemical_id: int
     concentration: float
+    owner: str | None = None
     id: int | None = None
 
 
 @dataclass
 class Dna:
     name: str
+    owner: str | None = None
     id: int | None = None
 
 
@@ -67,6 +78,7 @@ class Dna:
 class Vector:
     name: str
     dna_ids: list[int] = field(default_factory=list)
+    owner: str | None = None
     id: int | None = None
 
 
@@ -75,6 +87,7 @@ class Signal:
     name: str
     description: str = ""
     color: str = ""
+    owner: str | None = None
     id: int | None = None
 
 
@@ -87,6 +100,7 @@ class Sample:
     strain_id: int | None = None
     vector_id: int | None = None
     supplement_ids: list[int] = field(default_factory=list)
+    owner: str | None = None
     id: int | None = None
 
 
@@ -96,6 +110,7 @@ class Measurement:
     signal_id: int
     value: float
     time: float
+    owner: str | None = None
     id: int | None = None
 
 
